@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to release, without the leading v
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Java 21 matches the oldest supported Paper API. See the parent POM.
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+          # Imports the signing key and writes settings.xml, so neither the key nor the
+          # token reaches a command line or the log.
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+          server-id: central
+          server-username: CENTRAL_TOKEN_USERNAME
+          server-password: CENTRAL_TOKEN_PASSWORD
+
+      - name: Work out the version
+        id: version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          echo "value=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Releasing ${VERSION}"
+
+      - name: Stamp the version
+        # The tag sets the version; nothing is committed back.
+        run: ./mvnw --batch-mode --no-transfer-progress versions:set
+          -DnewVersion=${{ steps.version.outputs.value }} -DgenerateBackupPoms=false
+
+      - name: Build, test and sign
+        run: ./mvnw --batch-mode --no-transfer-progress -Prelease verify
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Publish the API to Maven Central
+        run: ./mvnw --batch-mode --no-transfer-progress -Prelease deploy -DskipTests
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          CENTRAL_TOKEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          CENTRAL_TOKEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+
+      - name: Publish the GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: HUDEngine ${{ steps.version.outputs.value }}
+          generate_release_notes: true
+          files: |
+            hudengine-plugin/target/HUDEngine-*.jar
+            hudengine-cli/target/hudengine-cli.jar

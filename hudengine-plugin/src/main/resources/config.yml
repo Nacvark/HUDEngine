@@ -1,0 +1,289 @@
+# HUDEngine
+#
+# Your HUD lives in this folder, next to this file:
+#
+#   huds/       which layouts make up a HUD, and where on screen they sit
+#   layouts/    the elements of a HUD and their positions
+#   images/     sprite definitions
+#   texts/      font definitions
+#   heads/      player head definitions
+#   compasses/  compass definitions
+#   points/     fixed compass points
+#   assets/     the PNG files images and compasses refer to
+#   fonts/      TTF files, only needed for characters the vanilla font lacks
+#   build/      compiler output.
+#
+# HUD-Движок. Ваш HUD находится в этой же папке: huds/, layouts/, images/,
+# texts/, heads/, compasses/, points/, assets/, fonts/. Папка build/ - вывод
+# компилятора, т.е. сгенерированный пак.
+
+enabled: true
+
+# Language for console and in-game messages: en or ru.
+# To change individual lines, copy messages/<language>.yml out of source plugin jar
+# to messages.yml (https://github.com/Nacvark/HUDEngine) in this folder and edit only the lines you care about.
+#
+# Язык сообщений в консоли и в игре: en или ru.
+# Чтобы заменить отдельные строки, скопируйте messages/<язык>.yml из исходников
+# плагина в messages.yml (https://github.com/Nacvark/HUDEngine) и правьте только нужные строки.
+language: en
+
+# Write an example HUD into this folder when it holds none.
+#
+# It exists so the plugin does something on the first start instead of showing an
+# empty screen, which reads as broken rather than as unconfigured. It is only ever
+# written when huds/ has nothing in it, so your own configuration is never touched.
+# Delete the folders and set this to false to stop it coming back.
+#
+# Записать пример HUD в эту папку, если своего в ней нет.
+#
+# Нужно для демонстрации возможностей плагина после установки.
+# Пишется только когда в huds/ пусто, так что вашу конфигурацию это не тронет.
+# Удалите папки и поставьте false, чтобы пример больше не появлялся.
+starter-hud: true
+
+# Send anonymous usage statistics to bStats: Minecraft versions in use, whether
+# PlaceholderAPI is installed, and how many HUDs a configuration ends up with.
+# Nothing identifies a server or a player. bStats also has its own global
+# opt-out in plugins/bStats/config.yml that covers every plugin at once.
+#
+# Отправлять анонимную статистику в bStats: используемые версии Minecraft, стоит
+# ли PlaceholderAPI, сколько худов в конфигурации. Ничего, что опознаёт сервер
+# или игрока. У bStats есть и свой общий выключатель в plugins/bStats/config.yml,
+# он действует сразу на все плагины.
+metrics: true
+
+# Hide vanilla HUD elements. Setting one to true hides it.
+#
+# A custom HUD usually draws its own health and hunger, and the vanilla ones
+# underneath turn the screen into two interfaces stacked on each other. There is no
+# game setting for this, so the pack replaces their sprites with transparent ones.
+#
+# Note this depends on resource-pack.position: another pack sent alongside can put
+# them back. If hidden elements reappear, that is the setting to look at.
+#
+# Скрыть ванильные элементы HUD. true - элемент скрыт.
+#
+# Кастомный HUD зачастую рисует собственные хп и голод, а ванильные под ним превращают
+# экран в два интерфейса (кастомный и ванила). Настройки для отключения в игре этого нет, поэтому
+# пак может подменять спрайты прозрачными, тем самым визуально отключая ванильный худ.
+#
+# Зависит от resource-pack.position: другой пак, отправленный рядом, может
+# вернуть их обратно (затереть скрытие). Если скрытое появилось снова - смотреть надо туда.
+hide-vanilla-hud:
+  health: false
+  food: false
+  armor: false
+  air: false
+  experience-bar: false
+  hotbar: false
+  crosshair: false
+  effects: false
+  jump-bar: false
+  level-text: false
+
+huds:
+  # Which HUDs every player sees on join. Empty means all of them.
+  # Какие HUD видит игрок при входе. Пусто - все скомпилированные.
+  default: []
+
+  # Ticks between HUD updates. A tick is 50 ms, so 2 means 10 updates a second.
+  # Nothing is sent when nothing changed, so raising this saves little on a
+  # mostly static HUD and mainly makes moving elements less smooth.
+  #
+  # Тиков между обновлениями. Тик - 50 мс, то есть 2 = 10 обновлений в секунду.
+  # Если ничего не меняется, пакет не отправляется, поэтому на статичном HUD
+  # увеличение (2+) почти ничего не экономит, а движущиеся элементы (компас) станут медленнее.
+  # Максимально возможная плавность компаса обеспечивается на 1, но при 100+ игроках может быть накладно.
+  tick-period: 2
+
+  # Bedrock clients cannot load Java resource packs, so their HUD would be a row
+  # of empty boxes.
+  #
+  # Bedrock-клиенты не умеют загружать Java-ресурспаки, поэтому HUD выглядел бы
+  # как ряд пустых квадратов.
+  disable-for-bedrock: true
+
+pack:
+  namespace: hudengine
+
+  description: HUDEngine resource pack
+
+  # Range of resource pack formats the built pack declares support for.
+  # 46 is 1.21.4, the oldest client this engine renders correctly on.
+  #
+  # One archive serves every version in the range: the shader for the oldest
+  # format sits at the pack root and newer ones are added as overlays, which
+  # the client picks between on its own. Leave these alone unless you have a
+  # reason to narrow the range.
+  #
+  # Диапазон форматов ресурспака, которые заявляет собранный пак.
+  # 46 - это 1.21.4, самый старый поддерживаемый клиент, на котором движок рисует корректно.
+  #
+  # Один архив обслуживает все версии диапазона: шейдер для самого старого
+  # формата лежит в корне пака, для более новых добавляются оверлеи, между
+  # которыми клиент выбирает сам. Лучше оставить по умолчанию.
+  min-format: 46
+  max-format: 99
+
+  # The boss bar colour the HUD rides on. The pack makes this colour's sprites
+  # transparent, so pick one no other plugin uses for a real boss bar.
+  #
+  # Цвет боссбара, на котором живёт HUD. Пак делает спрайты этого цвета
+  # прозрачными, поэтому выбирайте цвет, который не занят другими боссбарами (если есть).
+  boss-bar-color: yellow
+
+  # Which boss bar line the HUD ends up on. Leave it at 1 unless another plugin
+  # reliably shows a boss bar above ours, in which case raise it by one per bar
+  # to move the HUD back where it belongs. Takes effect after players receive
+  # the rebuilt pack, so they have to reconnect.
+  #
+  # На какой строке боссбара оказывается HUD. Оставьте 1, если другой плагин
+  # не показывает свой боссбар выше нашего. Иначе поднимайте на единицу за
+  # каждый такой боссбар, чтобы вернуть HUD на место. Работает после получения
+  # пересобранного пака, то есть игрокам нужно перезайти. Поправка точная: HUD
+  # возвращается на своё место, координаты элементов менять не нужно.
+  boss-bar-line: 1
+
+  # Characters added to every font on top of the languages it declares. Use it
+  # for symbols that belong to no script, for example: "⚔✦❤"
+  #
+  # Символы, добавляемые к каждому шрифту сверх объявленных им языков. Нужно
+  # для знаков вне алфавитов, например: "⚔✦❤"
+  extra-chars: ""
+
+  # Where to write the pack. Empty means build/HUDEngine.zip. Point it at a web
+  # server's directory to serve the pack straight from there.
+  #
+  # Куда писать пак. Без заполнения - build/HUDEngine.zip.
+  output: ""
+
+  # Also write the pack unpacked, for inspection. Off by default because it
+  # doubles the write on every reload.
+  # Дополнительно писать пак в распакованном виде, для просмотра. Выключено по
+  # умолчанию, так как удваивает запись при каждой перезагрузке.
+  write-tree: false
+
+  # Write build/manifest.json describing what was compiled. Useful for finding
+  # element keys for the API.
+  # Писать build/manifest.json с описанием скомпилированного. Полезно, чтобы
+  # находить ключи элементов для API.
+  write-manifest: true
+
+resource-pack:
+  # How the built pack reaches players.
+  #
+  #   none  build the file and stop, because you already distribute it yourself
+  #   url   the pack is published somewhere already; send that address
+  #   host  run a small HTTP server here and hand the pack out directly
+  #
+  # Как собранный пак попадает к игрокам.
+  #   none  просто собрать файл - вы раздаёте его сами
+  #   url   пак уже где-то опубликован, отправить этот адрес
+  #   host  поднять маленький HTTP-сервер и раздавать пак сервером
+  delivery: none
+
+  # Where the pack lives, for delivery: url.
+  # Где лежит пак, для delivery: url.
+  url: ""
+
+  host:
+    # Address to listen on. 0.0.0.0 means every interface.
+    # Адрес прослушивания. 0.0.0.0 - все интерфейсы.
+    bind: "0.0.0.0"
+    port: 8123
+    path: "/hudengine.zip"
+
+    # The address players should download from. This is what gets sent to them,
+    # so it has to be reachable from the outside: your public IP or a domain,
+    # not localhost. Port forwarding is your responsibility.
+    #
+    # Адрес, с которого игроки будут качать. Именно он отправляется клиенту,
+    # поэтому он должен быть доступен снаружи: ваш публичный IP или домен, а не
+    # localhost. Проброс порта - на вашей стороне.
+    public-url: "http://your-server-ip:8123/hudengine.zip"
+
+  # Send the pack when a player joins. Turn this off to send it yourself at some
+  # other moment through the API.
+  # Отправлять пак при входе игрока. Выключите, если хотите отправлять его сами через API.
+  send-on-join: true
+
+  # Kick players who decline or fail to download..
+  # Кикать тех, кто отказался или не смог скачать. По умолчанию выключено.
+  required: false
+
+  # Shown in the accept dialog. Leave empty for the client's default wording.
+  # Показывается в окне принятия. Пусто - стандартный текст клиента.
+  prompt: ""
+
+  # Shown when a player is kicked, if required is on. Empty uses the built-in
+  # message for the configured language.
+  # Показывается при кике, если required включён. Пусто - встроенное сообщение
+  # на выбранном языке.
+  kick-message: ""
+
+  # Other packs to send in the same request. Since 1.20.3 the client stacks
+  # packs instead of replacing them, so a server with its own textures does not
+  # need to merge anything: list them here and the player sees a single prompt.
+  # HUDEngine's own pack is always sent last, so its shader survives.
+  #
+  # Другие паки, отправляемые тем же запросом. С 1.20.3 клиент складывает паки
+  # стопкой, а не заменяет, поэтому сервер со своими текстурами ничего сливать
+  # не обязан: перечислите их здесь, и игрок увидит одно окно. Пак HUDEngine
+  # всегда отправляется последним, чтобы его шейдер не перекрыли.
+  #
+  # extra-packs:
+  #   - url: "https://example.com/my-textures.zip"
+  #     hash: "0123456789abcdef0123456789abcdef01234567"
+  extra-packs: []
+
+  # Where this pack sits among the ones sent above: last or first.
+  #
+  # It matters because the HUD works by replacing files the client already has.
+  # It blanks the sprites of the boss bar it rides on, and it replaces the text
+  # shader outright. Another pack touching either one wins or loses purely on
+  # order, and the symptoms are specific:
+  #
+  #   a yellow bar across the top of the screen  -> another pack restored the
+  #                                                 boss bar sprites; move this
+  #                                                 pack to the winning end
+  #   the HUD does not appear at all             -> another pack replaced the
+  #                                                 text shader
+  #
+  # Which end wins is not documented for server-sent packs, so if in doubt try
+  # both: it takes one rejoin to find out, and the answer does not change.
+  #
+  # Где этот пак стоит среди отправленных выше: last или first.
+  #
+  # Это важно, потому что HUD работает подменой файлов, которые у клиента уже
+  # есть: он гасит спрайты боссбара, на котором едет, и целиком заменяет шейдер
+  # текста. Другой пак, трогающий то же самое, выигрывает или проигрывает только
+  # по порядку, и симптомы однозначные:
+  #
+  #   жёлтая полоска вверху экрана  -> другой пак вернул спрайты боссбара,
+  #                                    переставьте этот пак на выигрышный край
+  #   HUD не появляется вообще      -> другой пак заменил шейдер текста
+  #
+  # Для серверных паков порядок приоритета не задокументирован, поэтому при
+  # сомнениях попробуйте оба варианта: это один перезаход, и ответ постоянный.
+  position: last
+
+skins:
+  # Download player skins for head elements. With this off, every head shows the
+  # built-in fallback face.
+  # Загружать скины игроков для элементов-голов. Если выключено, все головы
+  # показывают встроенное запасное лицо.
+  enabled: true
+  timeout-seconds: 5
+
+compass:
+  # Fold height into the distance a compass point reports. Without this a point
+  # a hundred blocks overhead reads as zero blocks away.
+  #
+  # Учитывать высоту в расстоянии до точки компаса. Без этого точка на сто
+  # блоков выше показывает нулевое расстояние, если вы находитесь на ней по X и Z.
+  height-aware: false
+
+  # Measure a point's radius horizontally rather than in three dimensions.
+  # Мерить радиус точки двухмерно (X Z), а не трёхмерно (X Y Z).
+  flat-radius: true

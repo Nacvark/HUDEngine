@@ -1,0 +1,73 @@
+# Сообщения HUDEngine, русский.
+#
+# Скопируйте этот файл в messages.yml в папке плагина, чтобы что-то изменить.
+# Пропущенные строки берутся из текста ниже, поэтому в своём файле можно
+# оставить только те, которые вы правите.
+#
+# Цвет намеренно редкий: префикс, слова-состояния и ошибки. Всё остальное
+# белое, чтобы глаз цеплялся за то, что изменилось.
+#
+# Форматирование - устаревшие коды: &a зелёный, &f белый, &c красный,
+# &e жёлтый, &7 серый. Значения в фигурных скобках подставляет плагин.
+
+prefix: "&a[HUDEngine]&f "
+
+console:
+  disabled: "Выключен в config.yml"
+  compiled: "Пак собран за {ms} мс в {path}"
+  running: "Запущен с худами: {huds}"
+  compile-failed: "&cКомпиляция не удалась.&f HUD не запущен."
+  reload-failed: "&cПерезагрузка не удалась.&f Продолжает работать прежняя модель."
+  no-huds: "Ни одного худа не скомпилировано. Положите папки huds/, layouts/ и images/ рядом с config.yml"
+  papi-found: "PlaceholderAPI найден, ключи papi: доступны"
+  papi-missing: "Худ использует плейсхолдеры papi:, но PlaceholderAPI не установлен - значения будут пустыми"
+  skins-offline: "У игроков нет текстуры скина. Головы будут рисоваться встроенным лицом."
+  shadow-unsupported: "Сервер старше, чем управление тенью на компонент (клиент 1.21.4), поэтому картинки и головы будут рисоваться с ванильной тенью."
+  glyph-missing: "Нет глифа для {codepoint} ('{character}'). Добавьте его язык в include шрифта."
+  unknown-default-hud: "В huds.default указан \"{hud}\", которого нет ни в одном конфиге. Пропускаю."
+  starter-written: "Стартовый HUD записан в {path}. Правьте его или удалите папки и поставьте starter-hud: false, чтобы он не появлялся снова. См. README.txt."
+  starter-empty: "В этой сборке нет стартового HUD, поэтому он не записан"
+  starter-failed: "Не удалось записать стартовый HUD: {error}"
+  papi-mismatch: "PlaceholderAPI установлен, но его API не такой, какого ожидает эта версия HUDEngine - ключи papi: отключены"
+  skin-failed: "Не удалось загрузить скин для {player}, используется запасное лицо: {error}"
+  tick-failed: "Не удалось собрать HUD для игрока {player}"
+  boss-bar-line-range: "pack.boss-bar-line должен быть от 1 до {max}, поэтому {value} читается как {fallback}"
+  level-text-moved: "pack.hide-vanilla-level-text переехал в hide-vanilla-hud.level-text и на прежнем месте игнорируется"
+  unknown-hidden-element: "hide-vanilla-hud: \"{key}\" движок скрывать не умеет. Известные элементы: {known}"
+  points-unreadable: "Не удалось прочитать точки компаса из {path}: {error}"
+  compass-provider-failed: "Провайдер точек компаса \"{id}\" завершился с ошибкой: {error}"
+  delivery-unknown: "В resource-pack.delivery указано \"{value}\" - это не none, url и не host; считаю за none"
+  pack-missing: "Собранного пака нет по пути {path}, раздача отключена"
+  pack-unreadable: "Не удалось прочитать собранный пак для раздачи: {error}"
+  extra-pack-not-a-map: "resource-pack.extra-packs: каждая запись должна быть картой с url и hash"
+  extra-pack-no-url: "resource-pack.extra-packs: у записи нет url, пропускаю"
+  extra-pack-bad-url: "resource-pack.extra-packs: \"{url}\" не является корректным URL, пропускаю"
+  host-started: "Раздаю ресурспак по адресу {url}"
+  host-failed: "Не удалось поднять раздачу пака на {bind}:{port}, пак отправляться не будет: {error}"
+
+pack:
+  kick-default: "&cДля игры на этом сервере нужен наш пакет ресурсов.&f Примите его, чтобы играть."
+
+command:
+  not-running: "&cHUD-движок не запущен.&f Посмотрите консоль, что пошло не так."
+  player-only: "Укажите игрока или выполните команду от его имени."
+  player-not-found: "&cИгрока \"{player}\" нет в сети."
+  no-permission: "&cНедостаточно прав."
+  no-permission-others: "&cВы можете менять только свой худ."
+  usage: "&7/{label} toggle [игрок] | show <худ> [игрок] | hide <худ> [игрок] | reset [игрок] | list [игрок] | reload"
+  usage-hud: "&7Использование: /{label} {sub} <худ> [игрок]"
+  shown: "HUD &aпоказан&f."
+  hidden: "HUD &7скрыт&f."
+  shown-other: "HUD &aпоказан&f игроку {player}."
+  hidden-other: "HUD &7скрыт&f у игрока {player}."
+  hud-shown: "Худ \"{hud}\" &aпоказан&f."
+  hud-hidden: "Худ \"{hud}\" &7скрыт&f."
+  hud-shown-other: "Худ \"{hud}\" &aпоказан&f игроку {player}."
+  hud-hidden-other: "Худ \"{hud}\" &7скрыт&f у игрока {player}."
+  hud-unknown: "&cХуда \"{hud}\" нет.&f Доступны: {huds}"
+  reset: "Набор худов возвращён к стандартному."
+  reset-other: "Набор худов возвращён к стандартному у игрока {player}."
+  list-compiled: "Скомпилированы: {huds}"
+  list-visible: "Видно игроку {player}: {huds}"
+  reloaded: "Перекомпилировано. Если менялись картинки, шрифты или позиции - игрокам нужно перезайти, чтобы получить новый пак."
+  reload-error: "Ошибка компиляции. {error}"

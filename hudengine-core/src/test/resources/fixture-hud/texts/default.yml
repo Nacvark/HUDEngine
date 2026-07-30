@@ -1,0 +1,11 @@
+default:
+  scale: 8
+  merge-default-bitmap: true
+
+# Declares a language set, so the pack also carries Cyrillic glyphs. Vanilla covers
+# them, so this font still needs no TTF of its own.
+cyrillic:
+  scale: 8
+  merge-default-bitmap: true
+  include:
+    - russia

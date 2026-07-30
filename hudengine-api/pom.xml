@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.nacvark</groupId>
+        <artifactId>hudengine-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>hudengine-api</artifactId>
+    <name>HUDEngine API</name>
+    <description>Public API for third-party plugins integrating with HUDEngine.</description>
+    <!-- Stated outright rather than inherited. Maven appends the module directory to an inherited
+         url and scm, and this POM is published, so its links have to point at things that exist. -->
+    <url>https://github.com/Nacvark/HUDEngine</url>
+
+    <scm>
+        <connection>scm:git:https://github.com/Nacvark/HUDEngine.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/Nacvark/HUDEngine.git</developerConnection>
+        <url>https://github.com/Nacvark/HUDEngine</url>
+    </scm>
+
+    <properties>
+        <!-- The one module that goes to Maven Central; see the parent for why. -->
+        <skipPublishing>false</skipPublishing>
+        <maven.deploy.skip>false</maven.deploy.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--
+              Publishes a self-contained POM. Maven Central reads the deployed POM alone and cannot
+              follow a parent that was never published, so url, licences, developers and scm have to
+              be inlined or the upload is rejected.
+
+              Dependencies are dropped rather than inlined. The only one is paper-api at provided
+              scope: it is a snapshot, which Central refuses in a release, and anyone compiling
+              against this API already has the server API on their classpath.
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.8.0</version>
+                <configuration>
+                    <flattenMode>ossrh</flattenMode>
+                    <pomElements>
+                        <dependencies>remove</dependencies>
+                        <!-- With no dependencies left there is nothing to resolve, and a published
+                             POM should not send consumers to repositories they did not choose. -->
+                        <repositories>remove</repositories>
+                    </pomElements>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten-clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

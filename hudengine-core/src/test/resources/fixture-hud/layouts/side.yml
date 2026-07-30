@@ -1,0 +1,28 @@
+side:
+  x: 0
+  y: 0
+  texts:
+    1:
+      name: default
+      pattern: "Level [level]"
+      x: 0
+      y: 0
+      scale: 1
+      color: yellow
+      align: right
+      layer: 0
+    2:
+      name: cyrillic
+      pattern: "Уровень [level]"
+      x: 0
+      y: 20
+      scale: 1
+      color: white
+      align: right
+      layer: 0
+  heads:
+    1:
+      name: face
+      x: 0
+      y: 10
+      layer: 0

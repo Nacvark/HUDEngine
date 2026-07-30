@@ -1,0 +1,53 @@
+# Fonts the starter HUD draws with.
+#
+# No file is set, so glyphs come from the vanilla sheets the engine ships. That means
+# this HUD needs no font of its own and matches the font the player already sees.
+#
+# Anything you type straight into a pattern is built into the pack automatically,
+# whatever alphabet it is in. `include` is for characters that only turn up while the
+# server runs — what a placeholder returns, what another plugin publishes — because
+# those cannot be known when the pack is built.
+#
+# Шрифты стартового HUD. file не задан, поэтому глифы берутся из ванильных листов,
+# которые движок носит с собой: свой шрифт не нужен, а текст совпадает с тем, что
+# игрок и так видит.
+#
+# Всё, что вы пишете прямо в pattern, попадает в пак само, на любом алфавите.
+# include нужен для символов, которые появляются только во время работы сервера:
+# что вернёт плейсхолдер, что опубликует другой плагин, — их при сборке не угадать.
+
+default:
+  scale: 8
+  merge-default-bitmap: true
+  include:
+    - russia
+
+small:
+  scale: 6
+  merge-default-bitmap: true
+  include:
+    - russia
+
+# A font of your own looks like this. Drop the file in fonts/, then uncomment.
+#
+# The `file` line is what actually uses the font. Without it the entry falls back to
+# vanilla glyphs and the text looks exactly as it did before — the single most common
+# reason a font "does not work". The engine warns about a file in fonts/ that nothing
+# names.
+#
+# merge-default-bitmap: false makes every character come from the file. Left at true,
+# vanilla glyphs are used first and the file only fills what they do not cover, which
+# is what you want when the point is a missing script rather than a different look.
+#
+# Known include names: russia, greece, japan, china, korean, thailand, hebrew, arab,
+# hindi, bengal, cyrillic-full.
+#
+# Читайте fonts/README.txt перед тем, как выбирать шрифт: на восьми пикселях выживает
+# далеко не всякий. Раскомментируйте, положив файл в fonts/.
+#
+# fancy:
+#   file: consolas.ttf
+#   scale: 8
+#   merge-default-bitmap: false
+#   include:
+#     - russia

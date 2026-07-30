@@ -1,0 +1,21 @@
+* text=auto eol=lf
+
+# Shell scripts must keep LF or they break on Linux and in CI.
+mvnw text eol=lf
+*.sh text eol=lf
+
+# Windows-only scripts.
+mvnw.cmd text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary assets: never touch.
+*.png binary
+*.jpg binary
+*.ttf binary
+*.otf binary
+*.zip binary
+*.jar binary
+
+# Glyph metrics table is tab-separated; keep it byte-exact.
+vanilla.tsv -text

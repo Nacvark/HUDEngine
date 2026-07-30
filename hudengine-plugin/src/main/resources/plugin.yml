@@ -1,0 +1,65 @@
+name: HUDEngine
+version: '${project.version}'
+main: io.github.nacvark.hudengine.paper.HudEnginePlugin
+api-version: '1.21'
+authors: [Nacvark]
+description: Server-side HUD engine. Compiles declarative configs into a resource pack and renders through the boss bar.
+website: https://github.com/Nacvark/HUDEngine
+folia-supported: true
+
+softdepend: [PlaceholderAPI]
+
+commands:
+  hudengine:
+    description: Show, hide and reload HUDs
+    usage: /hudengine toggle [player] | show <hud> [player] | hide <hud> [player] | reset [player] | list [player] | reload
+    aliases: [hud]
+
+permissions:
+  hudengine.*:
+    description: Everything HUDEngine offers
+    default: op
+    children:
+      hudengine.admin: true
+      hudengine.command.*: true
+
+  hudengine.admin:
+    description: Reload the configuration and act on other players' HUDs
+    default: op
+    children:
+      hudengine.command.reload: true
+      hudengine.command.others: true
+
+  hudengine.command.*:
+    description: Every HUDEngine command
+    default: op
+    children:
+      hudengine.command.toggle: true
+      hudengine.command.show: true
+      hudengine.command.hide: true
+      hudengine.command.reset: true
+      hudengine.command.list: true
+      hudengine.command.reload: true
+      hudengine.command.others: true
+
+  hudengine.command.toggle:
+    description: Turn your own HUD on and off
+    default: op
+  hudengine.command.show:
+    description: Show yourself a specific HUD
+    default: op
+  hudengine.command.hide:
+    description: Hide a specific HUD from yourself
+    default: op
+  hudengine.command.reset:
+    description: Return yourself to the default set of HUDs
+    default: op
+  hudengine.command.list:
+    description: List the compiled HUDs
+    default: op
+  hudengine.command.reload:
+    description: Recompile the configuration
+    default: op
+  hudengine.command.others:
+    description: Act on another player's HUD instead of your own
+    default: op

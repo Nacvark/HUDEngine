@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.nacvark</groupId>
+        <artifactId>hudengine-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>hudengine-plugin</artifactId>
+    <name>HUDEngine Plugin</name>
+    <description>Distributable plugin jar: bundles api, core and the Paper layer together with
+        the built-in vanilla glyph data and the starter HUD.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.nacvark</groupId>
+            <artifactId>hudengine-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.nacvark</groupId>
+            <artifactId>hudengine-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.nacvark</groupId>
+            <artifactId>hudengine-paper</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>HUDEngine-${project.version}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>plugin.yml</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <artifactSet>
+                                <includes>
+                                    <include>io.github.nacvark:*</include>
+                                    <include>org.bstats:*</include>
+                                </includes>
+                            </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <!-- bStats requires relocation so plugins do not fight over one
+                                         shared copy of its classes. -->
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>io.github.nacvark.hudengine.bstats</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

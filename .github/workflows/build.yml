@@ -1,0 +1,82 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Java 21 matches the oldest supported Paper API. See the parent POM.
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Build and test
+        run: ./mvnw --batch-mode --no-transfer-progress verify
+
+      - name: Verify the plugin is still Java 21 bytecode
+        run: ./.github/scripts/verify-bytecode.sh hudengine-plugin/target/HUDEngine-*.jar 65
+
+      - name: Compile a pack from the test fixture
+        run: |
+          java -jar hudengine-cli/target/hudengine-cli.jar \
+            hudengine-core/src/test/resources/fixture-hud \
+            "${RUNNER_TEMP}/pack-out"
+          test -f "${RUNNER_TEMP}/pack-out/HUDEngine.zip"
+
+      - name: Check the pack builds identically twice
+        run: |
+          java -jar hudengine-cli/target/hudengine-cli.jar \
+            hudengine-core/src/test/resources/fixture-hud \
+            "${RUNNER_TEMP}/pack-again"
+          a=$(sha1sum "${RUNNER_TEMP}/pack-out/HUDEngine.zip" | cut -d' ' -f1)
+          b=$(sha1sum "${RUNNER_TEMP}/pack-again/HUDEngine.zip" | cut -d' ' -f1)
+          echo "$a"
+          echo "$b"
+          test "$a" = "$b"
+
+      - name: Upload the plugin jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: HUDEngine-plugin
+          path: hudengine-plugin/target/HUDEngine-*.jar
+          if-no-files-found: error
+
+  api-compatibility:
+    name: Compile against the newest Paper API
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # The newest Paper API is Java 25 bytecode, so reading it needs Java 25.
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      - name: Rebuild against the newest API
+        # Catches API a 1.21.4 server has and a current one has dropped. The floor build
+        # catches the opposite.
+        run: |
+          NEWEST=$(./mvnw --batch-mode --quiet --non-recursive \
+            help:evaluate -Dexpression=paper.newest.version -DforceStdout)
+          echo "Newest Paper API: ${NEWEST}"
+          ./mvnw --batch-mode --no-transfer-progress \
+            -Dpaper.version="${NEWEST}" -DskipTests package

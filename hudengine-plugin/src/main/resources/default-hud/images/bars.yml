@@ -1,0 +1,52 @@
+# Sprites the starter HUD uses.
+#
+# A `listener` image is a bar: the engine slices it into `split` steps and picks one
+# from value over max. Everything here reads values the engine resolves on its own,
+# so this HUD works with no other plugin installed.
+#
+# Спрайты стартового HUD. Тип listener - это полоса: движок нарезает на элементы
+# и выбирает один по отношению value к max. Базовые значения здесь движок знает
+# сам, поэтому HUD работает без единого стороннего плагина.
+
+bar_background:
+  file: bar_background.png
+  setting:
+    scale: 1
+
+bar_health:
+  file: bar_health.png
+  type: listener
+  split: 40
+  split-type: left
+  setting:
+    scale: 1
+    listener:
+      value: "health"
+      max: "max_health"
+
+bar_food:
+  file: bar_food.png
+  type: listener
+  split: 20
+  split-type: left
+  setting:
+    scale: 1
+    listener:
+      value: "food"
+      max: "20"
+
+bar_air:
+  file: bar_air.png
+  type: listener
+  split: 20
+  split-type: left
+  setting:
+    scale: 1
+    listener:
+      value: "air"
+      max: "max_air"
+
+panel:
+  file: panel.png
+  setting:
+    scale: 1

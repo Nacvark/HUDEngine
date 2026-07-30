@@ -1,0 +1,17 @@
+# Fixed places a compass points at.
+#
+# Everything here is commented out because a coordinate that means nothing on your
+# map is worse than none at all. Uncomment, put in somewhere real, and it appears.
+# Moving points - quests, party members - come from other plugins through the API.
+#
+# Постоянные точки, на которые смотрит компас. Всё закомментировано намеренно:
+# координата, которая ничего не значит на вашей карте, хуже, чем её отсутствие.
+# Раскомментируйте, впишите реальное место - и точка появится. Подвижные точки
+# (задания, участники группы) приходят от других плагинов через API.
+
+#spawn:
+#  world: world
+#  x: 0
+#  z: 0
+#  radius: 0
+#  icon: name

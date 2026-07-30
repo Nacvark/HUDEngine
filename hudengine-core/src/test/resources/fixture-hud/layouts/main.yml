@@ -1,0 +1,30 @@
+main:
+  x: 0
+  y: 0
+  texts:
+    1:
+      name: default
+      pattern: "HUDEngine"
+      x: 0
+      y: 0
+      scale: 1
+      color: white
+      align: left
+      layer: 0
+    2:
+      name: default
+      pattern: "XYZ [player_x] [player_y] [player_z]"
+      x: 0
+      y: 10
+      scale: 1
+      color: gray
+      align: left
+      outline: 1
+      layer: 0
+  images:
+    1:
+      name: bar
+      x: 0
+      y: 22
+      layer: 0
+      condition: bar_visible

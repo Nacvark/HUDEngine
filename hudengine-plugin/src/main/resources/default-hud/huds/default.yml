@@ -1,0 +1,29 @@
+# Which layouts make up each HUD, and where they sit on screen.
+#
+# x and y are percentages of the screen, so a HUD stays where you put it whatever
+# resolution the player runs. 0,0 is the top left corner.
+#
+# Из каких лейаутов состоит каждый HUD и где он на экране. x и y - проценты от
+# экрана, поэтому HUD остаётся на месте при любом разрешении. 0,0 - левый верхний
+# угол.
+
+status:
+  layouts:
+    1:
+      name: status
+      x: 2
+      y: 4
+
+coords:
+  layouts:
+    1:
+      name: coords
+      x: 50
+      y: 88
+
+compass:
+  layouts:
+    1:
+      name: compass
+      x: 50
+      y: 4

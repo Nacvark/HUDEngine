@@ -1,0 +1,10 @@
+bar:
+  file: bar.png
+  type: listener
+  split: 20
+  split-type: left
+  setting:
+    scale: 1
+    listener:
+      value: "hp"
+      max: "hp_max"

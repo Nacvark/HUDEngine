@@ -1,0 +1,73 @@
+# HUDEngine messages, English.
+#
+# Copy this file to messages.yml in the plugin folder to override any of it.
+# Anything you leave out falls back to the text below, so an override file may
+# contain only the lines you want to change.
+#
+# Colour is deliberately sparse: the prefix, words that name a state, and
+# failures. Everything else stays white so the eye lands on what changed.
+#
+# Formatting uses legacy codes: &a green, &f white, &c red, &e yellow, &7 grey.
+# Values in braces are filled in by the plugin.
+
+prefix: "&a[HUDEngine]&f "
+
+console:
+  disabled: "Disabled in config.yml"
+  compiled: "Pack built in {ms} ms into {path}"
+  running: "Running with HUDs: {huds}"
+  compile-failed: "&cCompilation failed.&f The HUD is not running."
+  reload-failed: "&cReload failed.&f The previously loaded HUD is still running."
+  no-huds: "No HUDs were compiled. Put your huds/, layouts/ and images/ folders next to config.yml"
+  papi-found: "PlaceholderAPI found, papi: keys are available"
+  papi-missing: "A HUD uses papi: placeholders but PlaceholderAPI is not installed, so those values will be blank"
+  skins-offline: "Players here carry no skin texture. Head elements will draw the built-in face."
+  shadow-unsupported: "This server predates per-component shadow control (client 1.21.4), so HUD images and heads will be drawn with the vanilla text shadow."
+  glyph-missing: "No glyph for {codepoint} ('{character}'). Add its language to the font's include list."
+  unknown-default-hud: "huds.default lists \"{hud}\", which no config compiled. Ignoring it."
+  starter-written: "Wrote a starter HUD into {path}. Edit it, or delete the folders and set starter-hud: false to stop it coming back. See README.txt."
+  starter-empty: "This build carries no starter HUD, so none was written"
+  starter-failed: "Could not write the starter HUD: {error}"
+  papi-mismatch: "PlaceholderAPI is installed but its API is not the shape this version of HUDEngine expects, so papi: keys are disabled"
+  skin-failed: "Could not load the skin for {player}, using the fallback face: {error}"
+  tick-failed: "Building the HUD failed for {player}"
+  boss-bar-line-range: "pack.boss-bar-line must be between 1 and {max}, so {value} is being read as {fallback}"
+  level-text-moved: "pack.hide-vanilla-level-text has moved to hide-vanilla-hud.level-text and is being ignored where it is now"
+  unknown-hidden-element: "hide-vanilla-hud: \"{key}\" is not something this engine can hide. Known elements: {known}"
+  points-unreadable: "Could not read compass points from {path}: {error}"
+  compass-provider-failed: "Compass point provider \"{id}\" failed: {error}"
+  delivery-unknown: "resource-pack.delivery is \"{value}\", which is not none, url or host; treating it as none"
+  pack-missing: "The built pack is missing at {path}, so delivery is disabled"
+  pack-unreadable: "Could not read the built pack for delivery: {error}"
+  extra-pack-not-a-map: "resource-pack.extra-packs: every entry must be a map with url and hash"
+  extra-pack-no-url: "resource-pack.extra-packs: an entry has no url, skipping it"
+  extra-pack-bad-url: "resource-pack.extra-packs: \"{url}\" is not a valid URL, skipping it"
+  host-started: "Serving the resource pack on {url}"
+  host-failed: "Could not start the pack host on {bind}:{port}, so the pack will not be delivered: {error}"
+
+pack:
+  kick-default: "&cThis server needs its resource pack.&f Accept it to play here."
+
+command:
+  not-running: "&cThe HUD engine is not running.&f Check the console for what went wrong."
+  player-only: "Name a player, or run this as one."
+  player-not-found: "&cNo player named \"{player}\" is online."
+  no-permission: "&cYou do not have permission to do that."
+  no-permission-others: "&cYou may only change your own HUD."
+  usage: "&7/{label} toggle [player] | show <hud> [player] | hide <hud> [player] | reset [player] | list [player] | reload"
+  usage-hud: "&7Usage: /{label} {sub} <hud> [player]"
+  shown: "HUD is now &ashown&f."
+  hidden: "HUD is now &7hidden&f."
+  shown-other: "HUD is now &ashown&f for {player}."
+  hidden-other: "HUD is now &7hidden&f for {player}."
+  hud-shown: "HUD \"{hud}\" is now &ashown&f."
+  hud-hidden: "HUD \"{hud}\" is now &7hidden&f."
+  hud-shown-other: "HUD \"{hud}\" is now &ashown&f for {player}."
+  hud-hidden-other: "HUD \"{hud}\" is now &7hidden&f for {player}."
+  hud-unknown: "&cNo HUD named \"{hud}\".&f Available: {huds}"
+  reset: "HUD set back to the default."
+  reset-other: "HUD set back to the default for {player}."
+  list-compiled: "Compiled: {huds}"
+  list-visible: "Visible to {player}: {huds}"
+  reloaded: "Recompiled. If images, fonts or positions changed, players need to rejoin to pick up the new pack."
+  reload-error: "Compilation failed. {error}"

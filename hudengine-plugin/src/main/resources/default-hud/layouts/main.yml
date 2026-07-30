@@ -1,0 +1,111 @@
+# Where the elements of the starter HUD sit.
+#
+# x and y are pixels from the layout's anchor, which the hud file places on screen.
+# layer decides what draws over what: higher wins.
+#
+# Расположение элементов стартового HUD. x и y - пиксели от якоря лейаута, а сам
+# якорь ставится в файле худа. layer решает, что поверх чего: больше - выше.
+
+status:
+  x: 0
+  y: 0
+  heads:
+    1:
+      name: face
+      x: 0
+      y: 0
+      layer: 2
+  images:
+    1:
+      name: bar_background
+      x: 20
+      y: 0
+      layer: 0
+    2:
+      name: bar_health
+      x: 20
+      y: 0
+      layer: 1
+    3:
+      name: bar_background
+      x: 20
+      y: 8
+      layer: 0
+    4:
+      name: bar_food
+      x: 20
+      y: 8
+      layer: 1
+    # condition names a value; the image only draws while that value is true.
+    # is_swimming resolves to 1 or 0, and 0 counts as false, so the air bar
+    # appears when the player enters water and goes away when they leave it.
+    # No other plugin is involved: the engine knows this on its own.
+    #
+    # condition называет значение, и картинка рисуется, только пока оно истинно.
+    # is_swimming даёт 1 или 0, а 0 считается ложью, поэтому полоса воздуха
+    # появляется, когда игрок заходит в воду, и исчезает, когда выходит.
+    # Сторонние плагины здесь не участвуют - движок знает это сам.
+    5:
+      name: bar_background
+      x: 20
+      y: 16
+      layer: 0
+      condition: is_swimming
+    6:
+      name: bar_air
+      x: 20
+      y: 16
+      layer: 1
+      condition: is_swimming
+  texts:
+    1:
+      name: small
+      pattern: "[health]/[max_health]"
+      x: 62
+      y: 0
+      scale: 1
+      color: white
+      align: center
+      outline: 1
+      layer: 2
+    2:
+      name: small
+      pattern: "[food]/20"
+      x: 62
+      y: 8
+      scale: 1
+      color: white
+      align: center
+      outline: 1
+      layer: 2
+
+coords:
+  x: -64
+  y: 0
+  images:
+    1:
+      name: panel
+      x: 0
+      y: 0
+      layer: 0
+  texts:
+    1:
+      name: default
+      pattern: "[x] [y] [z]  [direction_short]"
+      x: 64
+      y: 4
+      scale: 1
+      color: white
+      align: center
+      layer: 1
+
+compass:
+  x: 0
+  y: 0
+  compasses:
+    1:
+      name: simple
+      x: -75
+      y: 0
+      layer: 0
+      outline: 1

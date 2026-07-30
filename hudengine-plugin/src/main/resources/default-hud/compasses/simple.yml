@@ -1,0 +1,58 @@
+# A compass ribbon.
+#
+# length is how many columns wide the strip is; every icon is baked at ceil(length/2)
+# sizes so it can shrink towards the edges. scale-equation drives that shrinking:
+# 1 at the centre, falling away by t/30 per step outwards.
+#
+# Лента компаса. length - ширина полосы в колонках; каждая иконка запекается в
+# ceil(length/2) размерах, чтобы уменьшаться к краям. scale-equation задаёт это
+# уменьшение: 1 в центре и меньше на t/30 за шаг к краю.
+
+simple:
+  length: 30
+  space: 2
+  scale: 2
+  scale-equation: "1 - t/30"
+  apply-opacity: true
+  file:
+    n:
+      name: compass_cardinal.png
+      scale: 1
+    e:
+      name: compass_cardinal.png
+      scale: 0.8
+    s:
+      name: compass_cardinal.png
+      scale: 0.8
+    w:
+      name: compass_cardinal.png
+      scale: 0.8
+    ne:
+      name: compass_ordinal.png
+      scale: 1
+    nw:
+      name: compass_ordinal.png
+      scale: 1
+    se:
+      name: compass_ordinal.png
+      scale: 1
+    sw:
+      name: compass_ordinal.png
+      scale: 1
+    chain:
+      name: compass_chain.png
+      scale: 0.7
+      opacity: 0.6
+    point:
+      name: compass_marker.png
+      scale: 1
+
+#  distance-text:      # display of the distance for point / отображение расстояния до точки
+#    font: small       # Font used for the distance text / Шрифт текста
+#    scale: 1          # Text size; font scale x this, under 5 px is unreadable / Размер текста; масштаб шрифта x это, меньше 5 px нечитаемо
+#    color: white      # Text color / Цвет текста.
+#    x: 0              # Horizontal offset / Смещение по X
+#    y: 12             # Vertical offset / Смещение по Y
+#    outline: 0        # Outline thickness / Толщина обводки
+#    focus: 0.2        # Visibility range (1.0 = always, 0.2 = only near center) / Диапазон видимости расстояния (1.0 = всегда, 0.2 = игрок смотрит в направление)
+#    suffix: "m"       # Text appended after the distance ("m", "bl.") / Приставка к расстоянию ("м", "бл.")

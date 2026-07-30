@@ -1,0 +1,6 @@
+main:
+  layouts:
+    1:
+      name: main
+      x: 2
+      y: 4

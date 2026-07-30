@@ -1,0 +1,8 @@
+# The player's own face, taken from their skin.
+# pixel is how many screen pixels one skin pixel becomes.
+#
+# Лицо игрока из его скина. pixel - во сколько экранных пикселей превращается
+# один пиксель скина.
+
+face:
+  pixel: 2
