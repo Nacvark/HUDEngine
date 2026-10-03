@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://adoptium.net/)
-[![Paper](https://img.shields.io/badge/Paper-1.21.4%20–%2026.2-brightgreen.svg)](https://papermc.io/)
+[![Paper](https://img.shields.io/badge/Paper-1.21.4%20–%2026.3-brightgreen.svg)](https://papermc.io/)
 [![bStats](https://img.shields.io/bstats/servers/32968)](https://bstats.org/plugin/bukkit/HUDEngine/32968)
 
 🌎 Choose language: **English (EN)** · [Русский (RU)](README-RU.md)
@@ -25,7 +25,7 @@ resource pack.
 
 ## Plugin features
 
-- **One resource pack for all supported versions.** Clients from Minecraft 1.21.4 to 26.2 pick the
+- **One resource pack for all supported versions.** Clients from Minecraft 1.21.4 to 26.3 pick the
   assets that apply to them automatically.
 - **Easy to use.** A minimal folder structure and little that has to be configured. Everything about
   setting it up is in the documentation, and the open source fills in the implementation details.
@@ -50,7 +50,7 @@ resource pack.
   configurable.
 
 ## Requirements
-Paper or Folia 1.21.4 — 26.2 (Java 21—25).
+Paper or Folia 1.21.4 — 26.3 (Java 21—25).
 No third-party plugins needed.
 
 ## Building a HUD
@@ -69,7 +69,7 @@ plugin's wiki: [go there](https://github.com/Nacvark/HUDEngine/wiki).
 
 **▶️ Click the image to watch the demonstration on YouTube**
 
-[![An example of a production HUD](https://img.youtube.com/vi/NZtoazEHZ2A/maxresdefault.jpg)](https://youtu.be/NZtoazEHZ2A)
+[![An example of a production HUD](https://img.youtube.com/vi/HgCGrVVhKpY/maxresdefault.jpg)](https://youtu.be/HgCGrVVhKpY)
 
 </details>
 
@@ -117,6 +117,10 @@ so clients do not re-download something they already have. If you already send p
 list them under `extra-packs` and everything arrives in a single prompt. Full detail is on the
 [Resource pack](https://github.com/Nacvark/HUDEngine/wiki/Resource-Pack) wiki page.
 
+Building your server's pack with ItemsAdder? Set `pack.export-folder` and HUDEngine writes its assets
+straight into ItemsAdder's content folder instead of sending a second pack — see
+[Merging with ItemsAdder](https://github.com/Nacvark/HUDEngine/wiki/ItemsAdder).
+
 ## Commands and permissions
 
 Aliased to `/hud`. Every command is available to operators only by default.
@@ -156,13 +160,13 @@ The API is on Maven Central. To add it to your plugin:
 <dependency>
     <groupId>io.github.nacvark</groupId>
     <artifactId>hudengine-api</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <scope>provided</scope>
 </dependency>
 ```
 
 ```kotlin
-compileOnly("io.github.nacvark:hudengine-api:1.0.0")
+compileOnly("io.github.nacvark:hudengine-api:1.1.0")
 ```
 
 Also add `softdepend: [HUDEngine]` to your `plugin.yml`, and get hold of the engine through the

@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://adoptium.net/)
-[![Paper](https://img.shields.io/badge/Paper-1.21.4%20–%2026.2-brightgreen.svg)](https://papermc.io/)
+[![Paper](https://img.shields.io/badge/Paper-1.21.4%20–%2026.3-brightgreen.svg)](https://papermc.io/)
 [![bStats](https://img.shields.io/bstats/servers/32968)](https://bstats.org/plugin/bukkit/HUDEngine/32968)
 
 🌎 Choose language: [English (EN)](README.md) · **Русский (RU)**
@@ -25,7 +25,7 @@ HUD-интерфейс без сторонних модификаций клие
 
 ## Преимущества плагина
 
-- **Один пак на все версии.** Клиенты Minecraft с 1.21.4 по 26.2 сами выбирают подходящие им ассеты.
+- **Один пак на все версии.** Клиенты Minecraft с 1.21.4 по 26.3 сами выбирают подходящие им ассеты.
 - **Простота использования.** Минимум папок и обязательных настроек. Вся информация по настройке
   описана в документации, а открытый код даст дополнительные разъяснения.
 - **Оптимизация.** HUD пересобирается только для тех игроков, у кого он включён. Отрисовка
@@ -51,7 +51,7 @@ HUD-интерфейс без сторонних модификаций клие
   сообщения о загрузке и обязательность (кикает ли за отказ) полностью настраиваются.
 
 ## Требования
-Paper или Folia 1.21.4 — 26.2 (Java 21—25).
+Paper или Folia 1.21.4 — 26.3 (Java 21—25).
 Никаких сторонних плагинов не нужно.
 
 ## Создание худа
@@ -70,7 +70,7 @@ HUD-интерфейс и пример для разбора конфигов.
 
 **▶️ Нажмите на изображение, чтобы посмотреть демонстрацию на YouTube**
 
-[![Пример production-версии худа](https://img.youtube.com/vi/NZtoazEHZ2A/maxresdefault.jpg)](https://youtu.be/NZtoazEHZ2A)
+[![Пример production-версии худа](https://img.youtube.com/vi/HgCGrVVhKpY/maxresdefault.jpg)](https://youtu.be/HgCGrVVhKpY)
 
 </details>
 
@@ -116,7 +116,11 @@ resource-pack:
 Что бы вы ни выбрали: пак побайтово одинаков между сборками, пока конфигурация не менялась, поэтому
 клиенты не перекачивают то, что у них уже есть. Если вы уже отправляете свои паки, перечислите их в
 `extra-packs`, и всё придёт одним окном. Подробности — на странице вики
-[Ресурспак](https://github.com/Nacvark/HUDEngine/wiki/Resource-Pack-RU).
+[Ресурспак](https://github.com/Nacvark/HUDEngine/wiki/Раздача-ресурспака).
+
+Собираете пак сервера через ItemsAdder? Задайте `pack.export-folder`, и HUDEngine запишет свои ассеты
+прямо в папку контента ItemsAdder, а не будет отправлять второй пак — см.
+[Слияние с ItemsAdder](https://github.com/Nacvark/HUDEngine/wiki/Слияние-с-ItemsAdder).
 
 ## Команды и права
 
@@ -157,13 +161,13 @@ API лежит в Maven Central. Добавить его в свой плаги�
 <dependency>
     <groupId>io.github.nacvark</groupId>
     <artifactId>hudengine-api</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <scope>provided</scope>
 </dependency>
 ```
 
 ```kotlin
-compileOnly("io.github.nacvark:hudengine-api:1.0.0")
+compileOnly("io.github.nacvark:hudengine-api:1.1.0")
 ```
 
 Также добавьте `softdepend: [HUDEngine]` в свой `plugin.yml` и получите движок через реестр сервисов
@@ -176,7 +180,7 @@ HudEngineProvider.find().ifPresent(hud ->
 
 Теперь `[myplugin:mana]` работает в любом паттерне HUD. Более подробные примеры — провайдеры компаса,
 показ HUD на время, измерение текста — описаны на странице вики
-[API](https://github.com/Nacvark/HUDEngine/wiki/API-RU).
+[API](https://github.com/Nacvark/HUDEngine/wiki/Добавление-API).
 
 ## Лицензия
 
