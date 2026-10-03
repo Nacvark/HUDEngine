@@ -32,10 +32,11 @@ final class Messages {
     private static final LegacyComponentSerializer LEGACY =
             LegacyComponentSerializer.builder().character('&').hexColors().build();
 
-    private final YamlConfiguration override;
-    private final YamlConfiguration language;
-    private final YamlConfiguration fallback;
-    private final String prefix;
+    // Replaced as a set by replaceWith, so every component holding this instance sees a reload.
+    private volatile YamlConfiguration override;
+    private volatile YamlConfiguration language;
+    private volatile YamlConfiguration fallback;
+    private volatile String prefix;
 
     private Messages(YamlConfiguration override, YamlConfiguration language, YamlConfiguration fallback) {
         this.override = override;
@@ -44,7 +45,21 @@ final class Messages {
         this.prefix = lookup("prefix");
     }
 
+    /**
+     * Takes over another instance's text.
+     *
+     * Commands, delivery, skins and the HUD service all hold this object, so a reload that only
+     * built a new one would leave every one of them speaking the old language.
+     */
+    void replaceWith(Messages other) {
+        this.override = other.override;
+        this.language = other.language;
+        this.fallback = other.fallback;
+        this.prefix = other.prefix;
+    }
+
     static Messages load(Plugin plugin, String configuredLanguage) {
+
         String requested = configuredLanguage == null
                 ? FALLBACK_LANGUAGE
                 : configuredLanguage.strip().toLowerCase(Locale.ROOT);

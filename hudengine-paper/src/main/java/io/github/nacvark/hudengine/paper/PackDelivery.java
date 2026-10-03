@@ -63,7 +63,7 @@ final class PackDelivery implements Listener {
         NONE, URL, HOST
     }
 
-    /** An extra pack sent alongside ours. */
+    /** An extra pack sent alongside the HUD pack. */
     private record ExtraPack(UUID id, URI uri, String hash) {
     }
 

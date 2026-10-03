@@ -47,8 +47,8 @@ public final class HudService implements Listener {
     private final ValueRegistry values;
     private final CompassPoints compass;
     private final RunStyler styler;
-    private final int tickPeriod;
-    private final boolean skipBedrock;
+    private volatile int tickPeriod;
+    private volatile boolean skipBedrock;
 
     /**
      * The compiled model, its renderer and the default HUD set, swapped as one.
@@ -110,6 +110,24 @@ public final class HudService implements Listener {
         this.loaded = new Loaded(newPack, new HudRenderer(newPack), List.copyOf(newDefaults));
         caches.clear();
         styler.clearCache();
+    }
+
+    /**
+     * Applies a changed tick period or Bedrock setting without a restart.
+     *
+     * A running task cannot change its period, so every player is detached and attached again.
+     * Selections, hidden players and anything registered through the API stay as they are.
+     */
+    void reconfigure(int newTickPeriod, boolean newSkipBedrock) {
+        int period = Math.max(1, newTickPeriod);
+        if (period == tickPeriod && newSkipBedrock == skipBedrock) {
+            return;
+        }
+        List<? extends Player> online = List.copyOf(plugin.getServer().getOnlinePlayers());
+        online.forEach(this::detach);
+        tickPeriod = period;
+        skipBedrock = newSkipBedrock;
+        online.forEach(this::attach);
     }
 
     /* ---------------- players ---------------- */

@@ -43,6 +43,9 @@ public final class HudEnginePlugin extends JavaPlugin {
     private HudService service;
     private PackDelivery delivery;
 
+    /** The resource-pack section delivery was built from, so a reload can tell whether it changed. */
+    private String deliveryConfig = "";
+
     /** Where the last successful compile wrote the pack, so delivery can pick it up after a reload. */
     private Path lastPack;
 
@@ -110,6 +113,7 @@ public final class HudEnginePlugin extends JavaPlugin {
         service.start();
 
         delivery = PackDelivery.create(this, log, messages, getConfig());
+        deliveryConfig = deliverySnapshot();
         if (delivery != null) {
             delivery.publish(lastPack);
             delivery.start();
@@ -176,7 +180,7 @@ public final class HudEnginePlugin extends JavaPlugin {
      */
     public List<Component> reload() {
         reloadConfig();
-        messages = Messages.load(this, getConfig().getString("language", "en"));
+        messages.replaceWith(Messages.load(this, getConfig().getString("language", "en")));
         if (compass != null) {
             applyCompassSettings();
         }
@@ -188,11 +192,7 @@ public final class HudEnginePlugin extends JavaPlugin {
                 return List.of(messages.prefixed("command.reloaded"));
             }
             service.swap(pack, defaultHuds(pack));
-            if (delivery != null) {
-                // Re-hash before anyone can be sent the new file; a stale hash makes every client
-                // re-download on every join.
-                delivery.publish(lastPack);
-            }
+            applyRuntimeSettings();
             getServer().getPluginManager().callEvent(new HudsReloadedEvent(service.availableHuds()));
             return List.of(messages.prefixed("command.reloaded"));
         } catch (ConfigurationException e) {
@@ -205,7 +205,46 @@ public final class HudEnginePlugin extends JavaPlugin {
         }
     }
 
+    /**
+     * Applies the settings the running engine was built with, without restarting it.
+     *
+     * A restart would drop every value and compass provider other plugins registered through the
+     * API, so each part is reconfigured where it stands instead.
+     */
+    private void applyRuntimeSettings() {
+        FileConfiguration config = getConfig();
+        service.reconfigure(config.getInt("huds.tick-period", 2),
+                config.getBoolean("huds.disable-for-bedrock", true));
+        skins.reconfigure(config.getBoolean("skins.enabled", true),
+                Duration.ofSeconds(config.getLong("skins.timeout-seconds", 5)));
+
+        // Rebuilt only when its section changed: rebuilding restarts the built-in HTTP host.
+        String snapshot = deliverySnapshot();
+        if (!snapshot.equals(deliveryConfig)) {
+            if (delivery != null) {
+                delivery.stop();
+            }
+            delivery = PackDelivery.create(this, log, messages, config);
+            if (delivery != null) {
+                delivery.start();
+            }
+            deliveryConfig = snapshot;
+        }
+        if (delivery != null) {
+            // Re-hash before anyone can be sent the new file; a stale hash makes every client
+            // re-download on every join.
+            delivery.publish(lastPack);
+        }
+    }
+
+    /** The resource-pack section as text, to tell whether a reload changed it. */
+    private String deliverySnapshot() {
+        ConfigurationSection section = getConfig().getConfigurationSection("resource-pack");
+        return section == null ? "" : section.getValues(true).toString();
+    }
+
     private void applyCompassSettings() {
+
         compass.loadFixed(dataFolder().resolve("points"));
         compass.configure(getConfig().getBoolean("compass.height-aware", false),
                 getConfig().getBoolean("compass.flat-radius", true));

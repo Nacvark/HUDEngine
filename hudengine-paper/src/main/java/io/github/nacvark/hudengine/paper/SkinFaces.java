@@ -45,8 +45,9 @@ public final class SkinFaces {
     private final Plugin plugin;
     private final PluginLogger log;
     private final Messages messages;
-    private final HttpClient http;
-    private final boolean enabled;
+    private volatile HttpClient http;
+    private volatile boolean enabled;
+    private volatile Duration timeout;
 
     private final Map<UUID, int[]> faces = new ConcurrentHashMap<>();
     private final Set<UUID> inFlight = ConcurrentHashMap.newKeySet();
@@ -57,10 +58,35 @@ public final class SkinFaces {
         this.log = log;
         this.messages = messages;
         this.enabled = enabled;
-        this.http = HttpClient.newBuilder()
+        this.timeout = timeout;
+        this.http = client(timeout);
+    }
+
+    private static HttpClient client(Duration timeout) {
+        return HttpClient.newBuilder()
                 .connectTimeout(timeout)
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
+    }
+
+    /**
+     * Applies changed skin settings without a restart.
+     *
+     * Cached faces are dropped so the change shows at once: turning skins off swaps every head to the
+     * built-in face, and turning them on fetches the real ones.
+     */
+    void reconfigure(boolean newEnabled, Duration newTimeout) {
+        if (newEnabled == enabled && newTimeout.equals(timeout)) {
+            return;
+        }
+        if (!newTimeout.equals(timeout)) {
+            HttpClient old = http;
+            http = client(newTimeout);
+            old.close();
+        }
+        enabled = newEnabled;
+        timeout = newTimeout;
+        faces.clear();
     }
 
     /** The player's face, or null while it is still being fetched. */
