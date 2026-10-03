@@ -149,36 +149,67 @@ public final class Compiled {
         return key;
     }
 
+    /** The sixteen named Minecraft colours, with both spellings of grey. */
+    private static final Map<String, Integer> NAMED_COLORS = Map.ofEntries(
+            Map.entry("black", 0x000000),
+            Map.entry("dark_blue", 0x0000AA),
+            Map.entry("dark_green", 0x00AA00),
+            Map.entry("dark_aqua", 0x00AAAA),
+            Map.entry("dark_red", 0xAA0000),
+            Map.entry("dark_purple", 0xAA00AA),
+            Map.entry("gold", 0xFFAA00),
+            Map.entry("gray", 0xAAAAAA),
+            Map.entry("grey", 0xAAAAAA),
+            Map.entry("dark_gray", 0x555555),
+            Map.entry("dark_grey", 0x555555),
+            Map.entry("blue", 0x5555FF),
+            Map.entry("green", 0x55FF55),
+            Map.entry("aqua", 0x55FFFF),
+            Map.entry("red", 0xFF5555),
+            Map.entry("light_purple", 0xFF55FF),
+            Map.entry("yellow", 0xFFFF55),
+            Map.entry("white", 0xFFFFFF));
+
     /** A named Minecraft colour or {@code #RRGGBB}. Unknown input falls back to white. */
     public static int parseColor(String value) {
         if (value == null) {
             return 0xFFFFFF;
         }
         String c = value.strip().toLowerCase(Locale.ROOT);
-        if (c.startsWith("#") && c.length() == 7) {
-            try {
-                return Integer.parseInt(c.substring(1), 16);
-            } catch (NumberFormatException e) {
-                return 0xFFFFFF;
-            }
+        Integer hex = hex(c);
+        if (hex != null) {
+            return hex;
         }
-        return switch (c) {
-            case "black" -> 0x000000;
-            case "dark_blue" -> 0x0000AA;
-            case "dark_green" -> 0x00AA00;
-            case "dark_aqua" -> 0x00AAAA;
-            case "dark_red" -> 0xAA0000;
-            case "dark_purple" -> 0xAA00AA;
-            case "gold" -> 0xFFAA00;
-            case "gray", "grey" -> 0xAAAAAA;
-            case "dark_gray", "dark_grey" -> 0x555555;
-            case "blue" -> 0x5555FF;
-            case "green" -> 0x55FF55;
-            case "aqua" -> 0x55FFFF;
-            case "red" -> 0xFF5555;
-            case "light_purple" -> 0xFF55FF;
-            case "yellow" -> 0xFFFF55;
-            default -> 0xFFFFFF;
-        };
+        return NAMED_COLORS.getOrDefault(c, 0xFFFFFF);
+    }
+
+    /**
+     * Whether {@link #parseColor} understands this value rather than falling back to white.
+     *
+     * An unknown value renders white without an error, so the validator uses this to report typos
+     * such as {@code grean}.
+     */
+    public static boolean isColor(String value) {
+        if (value == null) {
+            return true;
+        }
+        String c = value.strip().toLowerCase(Locale.ROOT);
+        return hex(c) != null || NAMED_COLORS.containsKey(c);
+    }
+
+    /** Names the colours {@link #parseColor} accepts, for error messages. */
+    public static List<String> colorNames() {
+        return NAMED_COLORS.keySet().stream().sorted().toList();
+    }
+
+    private static Integer hex(String c) {
+        if (!c.startsWith("#") || c.length() != 7) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(c.substring(1), 16);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

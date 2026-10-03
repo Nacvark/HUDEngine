@@ -1,5 +1,6 @@
 package io.github.nacvark.hudengine.core;
 
+import io.github.nacvark.hudengine.core.model.Compiled;
 import io.github.nacvark.hudengine.core.model.Model;
 import io.github.nacvark.hudengine.core.model.ModelValidator;
 import io.github.nacvark.hudengine.core.util.EngineLogger;
@@ -125,7 +126,31 @@ class ValidationTest {
     }
 
     @Test
+    void reportsAColourTypoInsteadOfQuietlyDrawingWhite(@TempDir Path work) throws IOException {
+        Path config = copyFixture(work);
+        replace(config.resolve("layouts/main.yml"), "color: white", "color: grean");
+
+        List<ModelValidator.Problem> problems = validate(config);
+        String reported = report(problems);
+
+        assertTrue(reported.contains("\"grean\""), reported);
+        assertTrue(reported.contains("Did you mean \"green\"?"), reported);
+        assertFalse(ModelValidator.hasErrors(problems), "a colour typo still draws, so it must not stop the compile");
+    }
+
+    @Test
+    void acceptsEveryColourTheRendererUnderstands() {
+        for (String name : Compiled.colorNames()) {
+            assertTrue(Compiled.isColor(name), name);
+        }
+        assertTrue(Compiled.isColor("#FFAA00"));
+        assertTrue(Compiled.isColor("WHITE"), "colour names are not case sensitive");
+        assertFalse(Compiled.isColor("#FFAA0"), "a short hex value is not a colour");
+    }
+
+    @Test
     void reportsAFontFileNothingPointsAt(@TempDir Path work) throws IOException {
+
         Path config = copyFixture(work);
         Files.createDirectories(config.resolve("fonts"));
         Files.write(config.resolve("fonts/unused.ttf"), new byte[]{0});

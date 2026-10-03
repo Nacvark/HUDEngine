@@ -117,6 +117,11 @@ public final class ModelValidator {
                     problems.add(error(at, "has scale " + text.scale() + "; it must be greater than zero"));
                 }
                 checkLegible(at, model.textFonts().get(text.name()), text.scale(), problems);
+                checkColor(at, "color", text.color(), problems);
+                if (text.colorByMap() != null) {
+                    text.colorByMap().forEach((value, colour) ->
+                            checkColor(at, "color-by \"" + value + "\"", colour, problems));
+                }
             }
             index = 0;
             for (Model.LayoutHead head : layout.heads()) {
@@ -248,7 +253,23 @@ public final class ModelValidator {
     }
 
     /**
+     * A colour the parser would not recognise.
+     *
+     * A warning rather than an error, since the element still draws, in white.
+     */
+    private static void checkColor(String where, String key, String value, List<Problem> problems) {
+        if (Compiled.isColor(value)) {
+            return;
+        }
+        String hint = suggest(value.strip().toLowerCase(Locale.ROOT), new TreeSet<>(Compiled.colorNames()));
+        problems.add(warning(where, key + " is \"" + value + "\", which is not a colour, so it renders white"
+                + (hint.startsWith(". Did you mean") ? hint
+                        : ". Use a name such as gold, or a hex value such as #FFAA00")));
+    }
+
+    /**
      * Font files sitting in {@code fonts/} that nothing points at.
+
      *
      * A font file takes effect only once an entry in {@code texts/} names it with {@code file:}.
      * Until then the text still renders, in the vanilla font, with nothing in the output to
@@ -304,6 +325,7 @@ public final class ModelValidator {
 
             if (compass.distanceText() != null) {
                 String at = where + " -> distance-text";
+                checkColor(at, "color", compass.distanceText().color(), problems);
                 String font = compass.distanceText().font();
                 if (font == null) {
                     problems.add(error(at, "has no font"));
