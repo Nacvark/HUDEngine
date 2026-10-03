@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -136,13 +138,15 @@ class ShaderDialectTest {
         assertEquals(ShaderDialect.UNIFORM_BLOCKS_330, ShaderDialect.forPackFormat(75)); // 1.21.11
         assertEquals(ShaderDialect.LIGHTMAP_HELPER, ShaderDialect.forPackFormat(84));    // 26.1
         assertEquals(ShaderDialect.TEXT_VARIANTS, ShaderDialect.forPackFormat(88));      // 26.2
+        assertEquals(ShaderDialect.SEPARATE_OBJECTS, ShaderDialect.forPackFormat(97));   // 26.3
     }
 
     @Test
     void anUnknownFutureFormatGetsTheNewestDialect() {
         // Guessing at the newest shape gives a new release a chance of working; falling back to the
         // oldest one guarantees it will not.
-        assertEquals(ShaderDialect.TEXT_VARIANTS, ShaderDialect.forPackFormat(500));
+        ShaderDialect[] all = ShaderDialect.values();
+        assertEquals(all[all.length - 1], ShaderDialect.forPackFormat(500));
     }
 
     @Test
@@ -156,11 +160,14 @@ class ShaderDialectTest {
         }
         assertEquals("assets/minecraft/shaders/core/text.vsh",
                 ShaderDialect.TEXT_VARIANTS.vertexShaderPath());
+        assertEquals("assets/minecraft/shaders/core/text.vsh",
+                ShaderDialect.SEPARATE_OBJECTS.vertexShaderPath());
     }
 
-    @Test
-    void theNewestDialectKeepsTheVariantGuardsTheClientCompilesWith() {
-        String vsh = vertex(ShaderDialect.TEXT_VARIANTS);
+    @ParameterizedTest
+    @EnumSource(value = ShaderDialect.class, names = {"TEXT_VARIANTS", "SEPARATE_OBJECTS"})
+    void variantDialectsKeepTheGuardsTheClientCompilesWith(ShaderDialect dialect) {
+        String vsh = vertex(dialect);
 
         // The client builds this source once per variant. A variant that fails to compile takes the
         // whole shader down, including the GUI one the HUD lives in.
@@ -173,7 +180,54 @@ class ShaderDialectTest {
         assertEquals(countOf(vsh, "#if "), countOf(vsh, "#endif"), "unbalanced preprocessor guards");
     }
 
+    /**
+     * The interface of the vanilla 26.3 text vertex shader, declaration by declaration.
+     *
+     * The client's fragment shader reads these by location. A declaration numbered differently
+     * sends its value to the wrong input, and text renders wrong or not at all.
+     */
+    private static final List<String> VANILLA_26_3_INTERFACE = List.of(
+            "layout(location = 0) in vec3 Position;",
+            "layout(location = 1) in vec4 Color;",
+            "layout(location = 2) in vec2 UV0;",
+            "layout(location = 3) in ivec2 UV2;",
+            "layout(location = 0) out float sphericalVertexDistance;",
+            "layout(location = 1) out float cylindricalVertexDistance;",
+            "layout(location = 2) out vec4 vertexColor;",
+            "layout(location = 3) out vec2 texCoord0;");
+
+    @Test
+    void separateObjectsMatchTheClientsInterfaceExactly() {
+        String vsh = vertex(ShaderDialect.SEPARATE_OBJECTS);
+        String[] lines = vsh.split("\n");
+
+        assertEquals("#version 330", lines[0]);
+        assertEquals("#extension GL_ARB_separate_shader_objects : require", lines[1],
+                "the extension has to follow #version directly");
+        for (String declaration : VANILLA_26_3_INTERFACE) {
+            assertTrue(vsh.contains(declaration), "missing or renumbered: " + declaration);
+        }
+        assertFalse(vsh.contains("#moj_import"), "26.3 no longer understands #moj_import");
+        assertTrue(vsh.contains("#include <minecraft:projection.glsl>"));
+        assertTrue(vsh.contains("#include <minecraft:dynamictransforms.glsl>"));
+    }
+
+    @Test
+    void separateObjectsSyntaxStaysOutOfOlderDialects() {
+        // 26.2 and earlier predate #include and the extension; giving them either breaks compilation.
+        for (ShaderDialect dialect : ShaderDialect.values()) {
+            if (dialect.separateObjects()) {
+                continue;
+            }
+            String vsh = vertex(dialect);
+            assertFalse(vsh.contains("layout(location"), dialect + " got explicit locations");
+            assertFalse(vsh.contains("#include"), dialect + " got #include");
+            assertFalse(vsh.contains("GL_ARB_separate_shader_objects"), dialect + " got the extension");
+        }
+    }
+
     private static int countOf(String text, String needle) {
+
         int count = 0;
         int at = text.indexOf(needle);
         while (at >= 0) {

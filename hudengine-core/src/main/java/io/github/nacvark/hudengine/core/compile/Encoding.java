@@ -33,7 +33,7 @@ public final class Encoding {
     /** Bits reserved for the screen Y inside the encoded ascent. */
     public static final int HEIGHT_BIT = 13;
 
-    /** Bit that marks an ascent as ours, so the shader leaves ordinary text alone. */
+    /** Bit that marks an ascent as a HUD glyph, so the shader leaves ordinary text alone. */
     public static final int MAX_BIT = 10;
 
     /** Constant added so that the encoded value never collides with a plausible real ascent. */

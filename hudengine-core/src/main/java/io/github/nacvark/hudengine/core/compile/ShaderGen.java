@@ -128,16 +128,25 @@ public final class ShaderGen {
      */
     private static String variantVertex(ShaderDialect dialect, Encoding.StateTable states,
                                         boolean hideVanillaLevelText, int defaultOffset) {
+        // 26.3 links the two stages by location rather than by name, so every input and output is
+        // numbered exactly as in the client's own text shader. A mismatch compiles without error,
+        // and the client's fragment shader then reads the wrong values.
+        boolean sso = dialect.separateObjects();
+        String include = sso ? "#include" : "#moj_import";
+
         List<String> out = new ArrayList<>();
         out.add("#version " + dialect.glslVersion());
+        if (sso) {
+            out.add("#extension GL_ARB_separate_shader_objects : require");
+        }
         out.add("");
         out.add(WORLD_ONLY);
-        out.add("#moj_import <minecraft:fog.glsl>");
-        out.add("#moj_import <minecraft:sample_lightmap.glsl>");
+        out.add(include + " <minecraft:fog.glsl>");
+        out.add(include + " <minecraft:sample_lightmap.glsl>");
         out.add("#endif");
         out.add("");
-        out.add("#moj_import <minecraft:dynamictransforms.glsl>");
-        out.add("#moj_import <minecraft:projection.glsl>");
+        out.add(include + " <minecraft:dynamictransforms.glsl>");
+        out.add(include + " <minecraft:projection.glsl>");
         out.add("");
 
         out.add("#define HEIGHT_BIT " + Encoding.HEIGHT_BIT);
@@ -146,23 +155,23 @@ public final class ShaderGen {
         out.add("#define DEFAULT_OFFSET " + defaultOffset);
         out.add("");
 
-        out.add("in vec3 Position;");
-        out.add("in vec4 Color;");
-        out.add("in vec2 UV0;");
+        out.add(location(sso, 0) + "in vec3 Position;");
+        out.add(location(sso, 1) + "in vec4 Color;");
+        out.add(location(sso, 2) + "in vec2 UV0;");
         out.add(WORLD_ONLY);
-        out.add("in ivec2 UV2;");
+        out.add(location(sso, 3) + "in ivec2 UV2;");
         out.add("#endif");
         out.add("");
 
         out.add(WORLD_ONLY);
         out.add("uniform sampler2D Sampler2;");
-        out.add("out float sphericalVertexDistance;");
-        out.add("out float cylindricalVertexDistance;");
+        out.add(location(sso, 0) + "out float sphericalVertexDistance;");
+        out.add(location(sso, 1) + "out float cylindricalVertexDistance;");
         out.add("#endif");
         out.add("");
 
-        out.add("out vec4 vertexColor;");
-        out.add("out vec2 texCoord0;");
+        out.add(location(sso, 2) + "out vec4 vertexColor;");
+        out.add(location(sso, 3) + "out vec2 texCoord0;");
         out.add("");
 
         if (hideVanillaLevelText) {
@@ -193,6 +202,11 @@ public final class ShaderGen {
         out.add("}");
 
         return String.join("\n", out) + "\n";
+    }
+
+    /** The {@code layout(location = n)} prefix a separate-objects shader needs, or nothing. */
+    private static String location(boolean separateObjects, int location) {
+        return separateObjects ? "layout(location = " + location + ") " : "";
     }
 
     /**
