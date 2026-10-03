@@ -44,6 +44,10 @@ console:
   extra-pack-bad-url: "resource-pack.extra-packs: \"{url}\" is not a valid URL, skipping it"
   host-started: "Serving the resource pack on {url}"
   host-failed: "Could not start the pack host on {bind}:{port}, so the pack will not be delivered: {error}"
+  export-target: "Exporting assets to {path} with the shader for Minecraft {version}. Rebuild the merging plugin's pack afterwards to pick them up (ItemsAdder: /iazip)."
+  export-refused: "pack.export-folder points inside the HUDEngine folder ({path}). Writing there would mix generated files into your own assets, so the export is skipped."
+  export-and-delivery: "pack.export-folder is set but resource-pack.delivery is {mode}, so players would receive the HUD twice. Set delivery to none and let the merging plugin send the pack."
+  itemsadder-conflict: "ItemsAdder has {settings} switched on. These replace the same text shader HUDEngine uses, so one of the two will stop working. Turn them off in ItemsAdder's config.yml."
 
 pack:
   kick-default: "&cThis server needs its resource pack.&f Accept it to play here."

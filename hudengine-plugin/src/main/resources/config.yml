@@ -107,6 +107,11 @@ huds:
 pack:
   namespace: hudengine
 
+  # Shown in the client's pack list. Put a pack.png next to this file to give the
+  # pack an icon as well. A square image works best.
+  #
+  # Подпись в списке паков у клиента. Положите pack.png рядом с этим файлом, чтобы
+  # у пака была и иконка. Лучше всего подходит квадратная картинка.
   description: HUDEngine resource pack
 
   # Range of resource pack formats the built pack declares support for.
@@ -163,6 +168,25 @@ pack:
   # Дополнительно писать пак в распакованном виде, для просмотра. Выключено по
   # умолчанию, так как удваивает запись при каждой перезагрузке.
   write-tree: false
+
+  # A second copy of the assets for plugins that build their own resource pack from
+  # other plugins' files, such as ItemsAdder. Empty means off. Only assets/ is
+  # written, with the shader for this server's Minecraft version, since those
+  # plugins drop the per-version overlays. Files written by an earlier export are
+  # removed; nothing else in the folder is touched.
+  #
+  # For ItemsAdder: plugins/ItemsAdder/contents/hudengine/resourcepack, then
+  # resource-pack.delivery: none, and run /iazip after every reload.
+  #
+  # Вторая копия ассетов для плагинов, которые собирают собственный ресурспак из
+  # файлов других плагинов, например ItemsAdder. Пусто - выключено. Пишется только
+  # assets/ с шейдером под версию Minecraft этого сервера, потому что такие плагины
+  # отбрасывают оверлеи под разные версии. Файлы прошлого экспорта удаляются,
+  # остальное содержимое папки не трогается.
+  #
+  # Для ItemsAdder: plugins/ItemsAdder/contents/hudengine/resourcepack, затем
+  # resource-pack.delivery: none и /iazip после каждой перезагрузки.
+  export-folder: ""
 
   # Write build/manifest.json describing what was compiled. Useful for finding
   # element keys for the API.

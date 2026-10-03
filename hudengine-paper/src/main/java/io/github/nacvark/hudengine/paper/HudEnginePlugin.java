@@ -4,6 +4,7 @@ import io.github.nacvark.hudengine.api.HudEngine;
 import io.github.nacvark.hudengine.api.event.HudsReloadedEvent;
 import io.github.nacvark.hudengine.core.compile.Encoding;
 import io.github.nacvark.hudengine.core.compile.HudPackCompiler;
+import io.github.nacvark.hudengine.core.compile.ShaderDialect;
 import io.github.nacvark.hudengine.core.compile.VanillaHud;
 import io.github.nacvark.hudengine.core.model.Compiled;
 import io.github.nacvark.hudengine.core.model.ConfigurationException;
@@ -239,7 +240,7 @@ public final class HudEnginePlugin extends JavaPlugin {
                 config.getBoolean("pack.write-manifest", true) ? build.resolve("manifest.json") : null,
                 options,
                 null,
-                log));
+                log), export(config, data));
 
         // Move into place only once the file is complete, so a web server can never hand a client
         // a half-written pack.
@@ -252,8 +253,36 @@ public final class HudEnginePlugin extends JavaPlugin {
         // Compiler diagnostics stay in English: they carry embedded technical data and come from the
         // platform-independent core, which has no business knowing about server languages.
         result.report().forEach(line -> log.info("  " + line));
+        ItemsAdderCheck.warnIfConflicting(this, log, messages);
         return result.pack();
     }
+
+    /**
+     * The merge copy requested by {@code pack.export-folder}, or null.
+     *
+     * Refused inside this plugin's own folder, build/ aside: assets/ there holds the server owner's
+     * source images, and generated files would end up mixed into them.
+     */
+    private HudPackCompiler.Export export(FileConfiguration config, Path data) {
+        String configured = config.getString("pack.export-folder", "");
+        if (configured == null || configured.isBlank()) {
+            return null;
+        }
+        Path folder = Path.of(configured).toAbsolutePath().normalize();
+        Path own = data.toAbsolutePath().normalize();
+        if (folder.startsWith(own) && !folder.startsWith(own.resolve("build"))) {
+            log.warn(messages.plain("console.export-refused", "path", folder));
+            return null;
+        }
+        String delivery = config.getString("resource-pack.delivery", "none");
+        if (!"none".equalsIgnoreCase(delivery)) {
+            log.warn(messages.plain("console.export-and-delivery", "mode", delivery));
+        }
+        String version = getServer().getMinecraftVersion();
+        log.info(messages.plain("console.export-target", "path", folder, "version", version));
+        return new HudPackCompiler.Export(folder, ShaderDialect.forMinecraftVersion(version));
+    }
+
 
     /**
      * Which boss bar line the HUD is drawn for.

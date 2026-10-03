@@ -91,12 +91,7 @@ public final class PackBuilder {
      * from re-downloading it.
      */
     public void write(Path outDir, Path outZip) throws IOException {
-        for (Map.Entry<String, List<Map<String, Object>>> font : fonts.entrySet()) {
-            Map<String, Object> root = new LinkedHashMap<>();
-            root.put("providers", font.getValue());
-            files.put("assets/" + namespace + "/font/" + font.getKey() + ".json",
-                    Json.write(root).getBytes(StandardCharsets.UTF_8));
-        }
+        serializeFonts();
 
         if (outDir != null) {
             for (Map.Entry<String, byte[]> file : files.entrySet()) {
@@ -117,6 +112,27 @@ public final class PackBuilder {
                     zip.closeEntry();
                 }
             }
+        }
+    }
+
+    /** Every file under {@code assets/}, for plugins that merge assets into a pack of their own. */
+    public Map<String, byte[]> assetFiles() {
+        serializeFonts();
+        Map<String, byte[]> out = new TreeMap<>();
+        files.forEach((path, bytes) -> {
+            if (path.startsWith("assets/")) {
+                out.put(path, bytes);
+            }
+        });
+        return out;
+    }
+
+    private void serializeFonts() {
+        for (Map.Entry<String, List<Map<String, Object>>> font : fonts.entrySet()) {
+            Map<String, Object> root = new LinkedHashMap<>();
+            root.put("providers", font.getValue());
+            files.put("assets/" + namespace + "/font/" + font.getKey() + ".json",
+                    Json.write(root).getBytes(StandardCharsets.UTF_8));
         }
     }
 }

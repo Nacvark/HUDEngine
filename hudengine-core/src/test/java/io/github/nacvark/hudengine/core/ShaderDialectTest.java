@@ -142,7 +142,31 @@ class ShaderDialectTest {
     }
 
     @Test
+    void aServerVersionMapsToTheDialectItsClientsNeed() {
+        assertEquals(ShaderDialect.LEGACY, ShaderDialect.forMinecraftVersion("1.21.4"));
+        assertEquals(ShaderDialect.LEGACY, ShaderDialect.forMinecraftVersion("1.21.5"));
+        assertEquals(ShaderDialect.UNIFORM_BLOCKS_150, ShaderDialect.forMinecraftVersion("1.21.6"));
+        assertEquals(ShaderDialect.UNIFORM_BLOCKS_150, ShaderDialect.forMinecraftVersion("1.21.8"));
+        assertEquals(ShaderDialect.UNIFORM_BLOCKS_330, ShaderDialect.forMinecraftVersion("1.21.9"));
+        assertEquals(ShaderDialect.UNIFORM_BLOCKS_330, ShaderDialect.forMinecraftVersion("1.21.11"));
+        assertEquals(ShaderDialect.LIGHTMAP_HELPER, ShaderDialect.forMinecraftVersion("26.1"));
+        assertEquals(ShaderDialect.LIGHTMAP_HELPER, ShaderDialect.forMinecraftVersion("26.1.2"));
+        assertEquals(ShaderDialect.TEXT_VARIANTS, ShaderDialect.forMinecraftVersion("26.2"));
+        assertEquals(ShaderDialect.SEPARATE_OBJECTS, ShaderDialect.forMinecraftVersion("26.3"));
+        // Numbers compare as numbers: 1.21.11 is newer than 1.21.9, not older.
+        assertEquals(ShaderDialect.UNIFORM_BLOCKS_330, ShaderDialect.forMinecraftVersion("1.21.10"));
+    }
+
+    @Test
+    void anUnreadableOrFutureVersionGetsTheNewestDialect() {
+        ShaderDialect[] all = ShaderDialect.values();
+        assertEquals(all[all.length - 1], ShaderDialect.forMinecraftVersion("27.0"));
+        assertEquals(all[all.length - 1], ShaderDialect.forMinecraftVersion("not a version"));
+    }
+
+    @Test
     void anUnknownFutureFormatGetsTheNewestDialect() {
+
         // Guessing at the newest shape gives a new release a chance of working; falling back to the
         // oldest one guarantees it will not.
         ShaderDialect[] all = ShaderDialect.values();

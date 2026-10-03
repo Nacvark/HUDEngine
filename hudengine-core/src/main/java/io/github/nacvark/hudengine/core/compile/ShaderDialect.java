@@ -153,6 +153,61 @@ public enum ShaderDialect {
         return packFormat < MIN_PACK_FORMAT ? LEGACY : values()[values().length - 1];
     }
 
+    /**
+     * The dialect a client on this Minecraft version needs, for when only the version is known.
+     *
+     * Used when the pack is exported for another plugin to merge. Those plugins take the files under
+     * {@code assets/} and leave the overlays behind, so the export has to carry the one shader the
+     * server's own version needs at the root.
+     */
+    public static ShaderDialect forMinecraftVersion(String version) {
+        int[] v = parseVersion(version);
+        if (v == null) {
+            return values()[values().length - 1];
+        }
+        if (atLeast(v, 26, 3)) {
+            return SEPARATE_OBJECTS;
+        }
+        if (atLeast(v, 26, 2)) {
+            return TEXT_VARIANTS;
+        }
+        if (atLeast(v, 26, 1)) {
+            return LIGHTMAP_HELPER;
+        }
+        if (atLeast(v, 1, 21, 9)) {
+            return UNIFORM_BLOCKS_330;
+        }
+        if (atLeast(v, 1, 21, 6)) {
+            return UNIFORM_BLOCKS_150;
+        }
+        return LEGACY;
+    }
+
+    private static int[] parseVersion(String version) {
+        if (version == null) {
+            return null;
+        }
+        String[] parts = version.strip().split("[.-]");
+        int[] out = new int[3];
+        try {
+            for (int i = 0; i < Math.min(3, parts.length); i++) {
+                out[i] = Integer.parseInt(parts[i]);
+            }
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        return out;
+    }
+
+    private static boolean atLeast(int[] version, int... floor) {
+        for (int i = 0; i < floor.length; i++) {
+            if (version[i] != floor[i]) {
+                return version[i] > floor[i];
+            }
+        }
+        return true;
+    }
+
     /** Dialects other than the one written at the pack root, which need an overlay. */
     public static List<ShaderDialect> overlaysFor(ShaderDialect base) {
         return List.of(values()).stream().filter(dialect -> dialect != base).toList();

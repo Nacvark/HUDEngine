@@ -10,6 +10,7 @@ import io.github.nacvark.hudengine.core.util.Json;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public final class HudPackCompiler {
     private HudPackCompiler() {
     }
 
-    /** The vanilla boss bar sprite is 182x5; ours is a fully transparent copy of the same size. */
+    /** The vanilla boss bar sprite is 182x5; the replacement is transparent and the same size. */
     private static final int BOSS_BAR_SPRITE_WIDTH = 182;
     private static final int BOSS_BAR_SPRITE_HEIGHT = 5;
 
@@ -140,7 +141,21 @@ public final class HudPackCompiler {
     public record Result(Compiled.Pack pack, Map<String, Object> manifest, List<String> report) {
     }
 
+    /**
+     * A second copy of the assets, for a plugin that merges them into a pack of its own.
+     *
+     * @param folder  where {@code assets/} is written
+     * @param dialect the one shader version to put at the root, since mergers drop the overlays
+     */
+    public record Export(Path folder, ShaderDialect dialect) {
+    }
+
     public static Result compile(Request request) throws IOException {
+        return compile(request, null);
+    }
+
+    public static Result compile(Request request, Export export) throws IOException {
+
         Options options = request.options();
         EngineLogger log = request.log();
         Model.Root model = Model.load(request.configFolder(), log);
@@ -173,6 +188,9 @@ public final class HudPackCompiler {
         writeSpaceFonts(pack);
         writePackFiles(pack, request, options, states);
         pack.write(request.outDir(), request.outZip());
+        if (export != null) {
+            writeExport(pack, export, options, states, report, request.log());
+        }
 
         Compiled.Pack compiled = new Compiled.Pack(
                 options.namespace(), pack.fontId(HUD_FONT), pack.fontId(SPACE_FONT),
@@ -285,6 +303,33 @@ public final class HudPackCompiler {
             for (String sprite : element.sprites()) {
                 pack.addFile("assets/minecraft/textures/gui/sprites/" + sprite, blank);
             }
+        }
+    }
+
+    /**
+     * Writes the merge copy: every asset, with the root shader swapped for the one the export targets.
+     *
+     * Overlays and pack.mcmeta are left out: the merging plugin writes its own pack.mcmeta, which
+     * does not list the overlays.
+     */
+    private static void writeExport(PackBuilder pack, Export export, Options options,
+                                    Encoding.StateTable states, List<String> report,
+                                    EngineLogger log) {
+        Map<String, byte[]> assets = pack.assetFiles();
+        assets.keySet().removeIf(path ->
+                path.startsWith("assets/minecraft/shaders/core/") && path.endsWith(".vsh"));
+        ShaderDialect dialect = export.dialect();
+        assets.put(dialect.vertexShaderPath(), ShaderGen.vertex(dialect, states,
+                options.hideVanillaLevelText(), options.shaderOffset()).getBytes(StandardCharsets.UTF_8));
+
+        // A bad export path must not cost the server its HUD: the main pack is already written.
+        try {
+            AssetExport.Result result = AssetExport.write(export.folder(), assets);
+            report.add("exported " + result.written() + " files to " + export.folder()
+                    + " with the " + dialect.id() + " shader"
+                    + (result.removed() > 0 ? ", removed " + result.removed() + " no longer produced" : ""));
+        } catch (IOException e) {
+            log.warn("could not export to " + export.folder() + ": " + e.getMessage());
         }
     }
 

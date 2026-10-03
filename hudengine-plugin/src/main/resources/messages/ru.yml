@@ -44,6 +44,10 @@ console:
   extra-pack-bad-url: "resource-pack.extra-packs: \"{url}\" не является корректным URL, пропускаю"
   host-started: "Раздаю ресурспак по адресу {url}"
   host-failed: "Не удалось поднять раздачу пака на {bind}:{port}, пак отправляться не будет: {error}"
+  export-target: "Экспортирую ассеты в {path} с шейдером для Minecraft {version}. После этого пересоберите пак плагина, который их подхватывает (в ItemsAdder - /iazip)."
+  export-refused: "pack.export-folder указывает внутрь папки HUDEngine ({path}). Запись туда смешала бы сгенерированные файлы с вашими собственными ассетами, поэтому экспорт пропущен."
+  export-and-delivery: "Задан pack.export-folder, но resource-pack.delivery равен {mode}, и игроки получат HUD дважды. Поставьте delivery: none, пусть пак отправляет плагин, который его собирает."
+  itemsadder-conflict: "В ItemsAdder включено: {settings}. Эти функции подменяют тот же текстовый шейдер, что и HUDEngine, поэтому один из двух перестанет работать. Выключите их в config.yml ItemsAdder."
 
 pack:
   kick-default: "&cДля игры на этом сервере нужен наш пакет ресурсов.&f Примите его, чтобы играть."
